@@ -51,8 +51,8 @@ const SERVICOS: Servico[] = [
     descricao: "Corte clássico e alinhado, ideal para o dia a dia e o trabalho.",
     duracao: "40 minutos",
     preco: 25,
-    foto: img("photo-1503951914875-452162b0f3f1", 800),
-    alt: "Barbeiro finalizando um corte social masculino com tesoura",
+    foto: img("photo-1599351431202-1e0f0137899a", 800),
+    alt: "Corte social clássico masculino bem alinhado",
   },
   {
     id: "degrade",
@@ -61,7 +61,7 @@ const SERVICOS: Servico[] = [
     duracao: "45 minutos",
     preco: 30,
     foto: img("photo-1621605815971-fbc98d665033", 800),
-    alt: "Cliente recebendo corte degradê com máquina em barbearia",
+    alt: "Corte degradê com transição visível nas laterais",
   },
   {
     id: "barba",
@@ -70,7 +70,7 @@ const SERVICOS: Servico[] = [
     duracao: "30 minutos",
     preco: 20,
     foto: img("photo-1622286342621-4bd786c2447c", 800),
-    alt: "Barbeiro aparando a barba de um cliente com navalha",
+    alt: "Serviço de aparagem de barba com navalha",
   },
   {
     id: "corte-barba",
@@ -78,8 +78,8 @@ const SERVICOS: Servico[] = [
     descricao: "O combo completo: corte sob medida e barba desenhada.",
     duracao: "1 hora",
     preco: 45,
-    foto: img("photo-1599351431202-1e0f0137899a", 800),
-    alt: "Homem com corte e barba finalizados sentado na cadeira da barbearia",
+    foto: img("photo-1503951914875-452162b0f3f1", 800),
+    alt: "Cliente recebendo corte e barba na cadeira da barbearia",
   },
   {
     id: "infantil",
@@ -88,7 +88,7 @@ const SERVICOS: Servico[] = [
     duracao: "40 minutos",
     preco: 25,
     foto: img("photo-1620331311520-246422fd82f9", 800),
-    alt: "Criança cortando o cabelo na barbearia com o barbeiro",
+    alt: "Criança cortando o cabelo na barbearia",
   },
 ];
 
