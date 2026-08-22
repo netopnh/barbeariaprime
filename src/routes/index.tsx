@@ -27,6 +27,13 @@ const img = (id: string, w = 1200) =>
 
 const HERO_IMG = img("photo-1585747860715-2ba37e788b70", 1800);
 
+type Erros = {
+  nome?: string;
+  servico?: string;
+  data?: string;
+  horario?: string;
+};
+
 type Servico = {
   id: string;
   nome: string;
@@ -161,8 +168,8 @@ const dataBR = (iso: string) => {
 
 const diaSemana = (iso: string) => {
   if (!iso) return -1;
-  const [a, m, d] = iso.split("-").map(Number);
-  return new Date(a, m - 1, d).getDay(); // 0 = domingo
+  const p = iso.split("-").map(Number);
+  return new Date(p[0] ?? 0, (p[1] ?? 1) - 1, p[2] ?? 1).getDay(); // 0 = domingo
 };
 
 function gerarHorarios(iso: string): string[] {
@@ -210,7 +217,7 @@ function LandingPage() {
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
   const [obs, setObs] = useState("");
-  const [erros, setErros] = useState<Record<string, string>>({});
+  const [erros, setErros] = useState<Erros>({});
 
   const nomeRef = useRef<HTMLInputElement>(null);
 
@@ -233,12 +240,12 @@ function LandingPage() {
 
   const confirmar = (e: React.FormEvent) => {
     e.preventDefault();
-    const novos: Record<string, string> = {};
-    if (!nome.trim()) novos.nome = "Informe seu nome completo.";
-    if (!servico) novos.servico = "Escolha um serviço.";
-    if (!data) novos.data = "Escolha uma data.";
-    else if (diaSemana(data) === 0) novos.data = "Aos domingos a barbearia está fechada.";
-    if (!horario) novos.horario = "Selecione um horário.";
+    const novos: Erros = {};
+    if (!nome.trim()) novos["nome"] = "Informe seu nome completo.";
+    if (!servico) novos["servico"] = "Escolha um serviço.";
+    if (!data) novos["data"] = "Escolha uma data.";
+    else if (diaSemana(data) === 0) novos["data"] = "Aos domingos a barbearia está fechada.";
+    if (!horario) novos["horario"] = "Selecione um horário.";
     setErros(novos);
     if (Object.keys(novos).length > 0) {
       const primeiro = document.querySelector<HTMLElement>("[data-erro='true']");
@@ -506,7 +513,7 @@ function LandingPage() {
               className="reveal space-y-6 rounded-xl border border-border bg-card p-6 sm:p-8"
             >
               <div className="grid gap-6 sm:grid-cols-2">
-                <div data-erro={Boolean(erros.nome)}>
+                <div data-erro={Boolean(erros["nome"])}>
                   <label htmlFor="nome" className="mb-2 block text-sm font-medium">
                     Nome completo *
                   </label>
@@ -520,11 +527,11 @@ function LandingPage() {
                       setErros((x) => ({ ...x, nome: "" }));
                     }}
                     placeholder="Seu nome"
-                    aria-invalid={Boolean(erros.nome)}
-                    className={`${campoBase} ${erros.nome ? "border-destructive" : "border-border"}`}
+                    aria-invalid={Boolean(erros["nome"])}
+                    className={`${campoBase} ${erros["nome"] ? "border-destructive" : "border-border"}`}
                   />
-                  {erros.nome && (
-                    <p className="mt-1.5 text-sm text-destructive">{erros.nome}</p>
+                  {erros["nome"] && (
+                    <p className="mt-1.5 text-sm text-destructive">{erros["nome"]}</p>
                   )}
                 </div>
 
@@ -545,7 +552,7 @@ function LandingPage() {
                 </div>
               </div>
 
-              <div data-erro={Boolean(erros.servico)}>
+              <div data-erro={Boolean(erros["servico"])}>
                 <label htmlFor="servico" className="mb-2 block text-sm font-medium">
                   Serviço *
                 </label>
@@ -556,8 +563,8 @@ function LandingPage() {
                     setServicoId(e.target.value);
                     setErros((x) => ({ ...x, servico: "" }));
                   }}
-                  aria-invalid={Boolean(erros.servico)}
-                  className={`${campoBase} ${erros.servico ? "border-destructive" : "border-border"}`}
+                  aria-invalid={Boolean(erros["servico"])}
+                  className={`${campoBase} ${erros["servico"] ? "border-destructive" : "border-border"}`}
                 >
                   <option value="">Selecione um serviço</option>
                   {SERVICOS.map((s) => (
@@ -566,8 +573,8 @@ function LandingPage() {
                     </option>
                   ))}
                 </select>
-                {erros.servico && (
-                  <p className="mt-1.5 text-sm text-destructive">{erros.servico}</p>
+                {erros["servico"] && (
+                  <p className="mt-1.5 text-sm text-destructive">{erros["servico"]}</p>
                 )}
                 <p className="mt-3 flex items-center justify-between rounded-md border border-border bg-secondary/50 px-4 py-3 text-sm">
                   <span className="text-muted-foreground">Valor do serviço</span>
@@ -577,7 +584,7 @@ function LandingPage() {
                 </p>
               </div>
 
-              <div data-erro={Boolean(erros.data)}>
+              <div data-erro={Boolean(erros["data"])}>
                 <label htmlFor="data" className="mb-2 block text-sm font-medium">
                   Data *
                 </label>
@@ -590,20 +597,20 @@ function LandingPage() {
                     setData(e.target.value);
                     setErros((x) => ({ ...x, data: "" }));
                   }}
-                  aria-invalid={Boolean(erros.data)}
-                  className={`${campoBase} ${erros.data ? "border-destructive" : "border-border"}`}
+                  aria-invalid={Boolean(erros["data"])}
+                  className={`${campoBase} ${erros["data"] ? "border-destructive" : "border-border"}`}
                 />
-                {data && !erros.data && (
+                {data && !erros["data"] && (
                   <p className="mt-1.5 text-sm text-muted-foreground">
                     Data escolhida: {dataBR(data)}
                   </p>
                 )}
-                {erros.data && (
-                  <p className="mt-1.5 text-sm text-destructive">{erros.data}</p>
+                {erros["data"] && (
+                  <p className="mt-1.5 text-sm text-destructive">{erros["data"]}</p>
                 )}
               </div>
 
-              <fieldset data-erro={Boolean(erros.horario)}>
+              <fieldset data-erro={Boolean(erros["horario"])}>
                 <legend className="mb-2 block text-sm font-medium">Horário *</legend>
                 {!data && (
                   <p className="text-sm text-muted-foreground">
@@ -637,8 +644,8 @@ function LandingPage() {
                     ))}
                   </div>
                 )}
-                {erros.horario && (
-                  <p className="mt-1.5 text-sm text-destructive">{erros.horario}</p>
+                {erros["horario"] && (
+                  <p className="mt-1.5 text-sm text-destructive">{erros["horario"]}</p>
                 )}
               </fieldset>
 
