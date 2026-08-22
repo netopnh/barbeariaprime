@@ -17,7 +17,7 @@ import {
 /* ============================================================
    NÚMERO DO WHATSAPP DA BARBEARIA (altere aqui quando precisar)
    ============================================================ */
-const WHATSAPP_NUMERO = "5591981071939";
+const WHATSAPP_NUMERO = "5511999999999";
 
 const ENDERECO = "Av. Almirante Barroso, 1200 — Marco, Belém — PA";
 const INSTAGRAM = "@barbeariaprime";
@@ -51,8 +51,8 @@ const SERVICOS: Servico[] = [
     descricao: "Corte clássico e alinhado, ideal para o dia a dia e o trabalho.",
     duracao: "40 minutos",
     preco: 25,
-    foto: img("photo-1503951914875-452162b0f3f1", 800),
-    alt: "Barbeiro finalizando um corte social masculino com tesoura",
+    foto: img("photo-1599351431202-1e0f0137899a", 800),
+    alt: "Corte social clássico masculino bem alinhado",
   },
   {
     id: "degrade",
@@ -61,7 +61,7 @@ const SERVICOS: Servico[] = [
     duracao: "45 minutos",
     preco: 30,
     foto: img("photo-1621605815971-fbc98d665033", 800),
-    alt: "Cliente recebendo corte degradê com máquina em barbearia",
+    alt: "Corte degradê com transição visível nas laterais",
   },
   {
     id: "barba",
@@ -70,7 +70,7 @@ const SERVICOS: Servico[] = [
     duracao: "30 minutos",
     preco: 20,
     foto: img("photo-1622286342621-4bd786c2447c", 800),
-    alt: "Barbeiro aparando a barba de um cliente com navalha",
+    alt: "Serviço de aparagem de barba com navalha",
   },
   {
     id: "corte-barba",
@@ -78,8 +78,8 @@ const SERVICOS: Servico[] = [
     descricao: "O combo completo: corte sob medida e barba desenhada.",
     duracao: "1 hora",
     preco: 45,
-    foto: img("photo-1599351431202-1e0f0137899a", 800),
-    alt: "Homem com corte e barba finalizados sentado na cadeira da barbearia",
+    foto: img("photo-1503951914875-452162b0f3f1", 800),
+    alt: "Cliente recebendo corte e barba na cadeira da barbearia",
   },
   {
     id: "infantil",
@@ -88,7 +88,7 @@ const SERVICOS: Servico[] = [
     duracao: "40 minutos",
     preco: 25,
     foto: img("photo-1620331311520-246422fd82f9", 800),
-    alt: "Criança cortando o cabelo na barbearia com o barbeiro",
+    alt: "Criança cortando o cabelo na barbearia",
   },
 ];
 
@@ -154,10 +154,20 @@ export const Route = createFileRoute("/")({
 const formatarPreco = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const hojeISO = () => {
+const hojeLocal = () => {
   const d = new Date();
-  const off = d.getTimezoneOffset();
-  return new Date(d.getTime() - off * 60000).toISOString().slice(0, 10);
+  return { ano: d.getFullYear(), mes: d.getMonth() + 1, dia: d.getDate() };
+};
+
+const hojeISO = () => {
+  const { ano, mes, dia } = hojeLocal();
+  return `${ano}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+};
+
+const dataLimiteISO = () => {
+  const hoje = new Date();
+  const limite = new Date(hoje.getFullYear() + 1, hoje.getMonth(), hoje.getDate());
+  return `${limite.getFullYear()}-${String(limite.getMonth() + 1).padStart(2, "0")}-${String(limite.getDate()).padStart(2, "0")}`;
 };
 
 const dataBR = (iso: string) => {
@@ -170,6 +180,16 @@ const diaSemana = (iso: string) => {
   if (!iso) return -1;
   const p = iso.split("-").map(Number);
   return new Date(p[0] ?? 0, (p[1] ?? 1) - 1, p[2] ?? 1).getDay(); // 0 = domingo
+};
+
+const dataEhValida = (iso: string) => {
+  if (!iso) return false;
+  const p = iso.split("-").map(Number);
+  const escolhida = new Date(p[0] ?? 0, (p[1] ?? 1) - 1, p[2] ?? 1);
+  const hoje = new Date();
+  const hojeMeiaNoite = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const limite = new Date(hoje.getFullYear() + 1, hoje.getMonth(), hoje.getDate());
+  return escolhida >= hojeMeiaNoite && escolhida < limite;
 };
 
 function gerarHorarios(iso: string): string[] {
@@ -244,7 +264,10 @@ function LandingPage() {
     if (!nome.trim()) novos["nome"] = "Informe seu nome completo.";
     if (!servico) novos["servico"] = "Escolha um serviço.";
     if (!data) novos["data"] = "Escolha uma data.";
-    else if (diaSemana(data) === 0) novos["data"] = "Aos domingos a barbearia está fechada.";
+    else if (!dataEhValida(data)) {
+      novos["data"] = "Escolha uma data válida a partir de hoje.";
+      setData("");
+    } else if (diaSemana(data) === 0) novos["data"] = "Aos domingos a barbearia está fechada.";
     if (!horario) novos["horario"] = "Selecione um horário.";
     setErros(novos);
     if (Object.keys(novos).length > 0) {
@@ -593,9 +616,16 @@ function LandingPage() {
                   type="date"
                   value={data}
                   min={hojeISO()}
+                  max={dataLimiteISO()}
                   onChange={(e) => {
-                    setData(e.target.value);
-                    setErros((x) => ({ ...x, data: "" }));
+                    const nova = e.target.value;
+                    if (nova && !dataEhValida(nova)) {
+                      setData("");
+                      setErros((x) => ({ ...x, data: "Escolha uma data válida a partir de hoje." }));
+                    } else {
+                      setData(nova);
+                      setErros((x) => ({ ...x, data: "" }));
+                    }
                   }}
                   aria-invalid={Boolean(erros["data"])}
                   className={`${campoBase} ${erros["data"] ? "border-destructive" : "border-border"}`}
@@ -734,7 +764,7 @@ function LandingPage() {
                     rel="noopener noreferrer"
                     className="transition-colors hover:text-gold"
                   >
-                    WhatsApp: (91) 98107-1939
+                    WhatsApp: (11) 99999-9999
                   </a>
                 </li>
                 <li className="flex gap-3">
@@ -806,7 +836,7 @@ function LandingPage() {
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-gold"
                 >
-                  (91) 98107-1939
+                  (11) 99999-9999
                 </a>
               </li>
               <li>
