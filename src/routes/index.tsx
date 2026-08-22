@@ -265,8 +265,7 @@ function LandingPage() {
     if (!servico) novos["servico"] = "Escolha um serviço.";
     if (!data) novos["data"] = "Escolha uma data.";
     else if (!dataEhValida(data)) {
-      novos["data"] = "Escolha uma data válida a partir de hoje.";
-      setData("");
+      novos["data"] = "Escolha uma data a partir de hoje.";
     } else if (diaSemana(data) === 0) novos["data"] = "Aos domingos a barbearia está fechada.";
     if (!horario) novos["horario"] = "Selecione um horário.";
     setErros(novos);
@@ -618,14 +617,8 @@ function LandingPage() {
                   min={hojeISO()}
                   max={dataLimiteISO()}
                   onChange={(e) => {
-                    const nova = e.target.value;
-                    if (nova && !dataEhValida(nova)) {
-                      setData("");
-                      setErros((x) => ({ ...x, data: "Escolha uma data válida a partir de hoje." }));
-                    } else {
-                      setData(nova);
-                      setErros((x) => ({ ...x, data: "" }));
-                    }
+                    setData(e.target.value);
+                    if (erros["data"]) setErros((x) => ({ ...x, data: "" }));
                   }}
                   aria-invalid={Boolean(erros["data"])}
                   className={`${campoBase} ${erros["data"] ? "border-destructive" : "border-border"}`}
