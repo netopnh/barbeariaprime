@@ -17,7 +17,7 @@ import {
 /* ============================================================
    NÚMERO DO WHATSAPP DA BARBEARIA (altere aqui quando precisar)
    ============================================================ */
-const WHATSAPP_NUMERO = "5591981071939";
+const WHATSAPP_NUMERO = "5511999999999";
 
 const ENDERECO = "Av. Almirante Barroso, 1200 — Marco, Belém — PA";
 const INSTAGRAM = "@barbeariaprime";
@@ -154,10 +154,20 @@ export const Route = createFileRoute("/")({
 const formatarPreco = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const hojeISO = () => {
+const hojeLocal = () => {
   const d = new Date();
-  const off = d.getTimezoneOffset();
-  return new Date(d.getTime() - off * 60000).toISOString().slice(0, 10);
+  return { ano: d.getFullYear(), mes: d.getMonth() + 1, dia: d.getDate() };
+};
+
+const hojeISO = () => {
+  const { ano, mes, dia } = hojeLocal();
+  return `${ano}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+};
+
+const dataLimiteISO = () => {
+  const hoje = new Date();
+  const limite = new Date(hoje.getFullYear() + 1, hoje.getMonth(), hoje.getDate());
+  return `${limite.getFullYear()}-${String(limite.getMonth() + 1).padStart(2, "0")}-${String(limite.getDate()).padStart(2, "0")}`;
 };
 
 const dataBR = (iso: string) => {
@@ -170,6 +180,16 @@ const diaSemana = (iso: string) => {
   if (!iso) return -1;
   const p = iso.split("-").map(Number);
   return new Date(p[0] ?? 0, (p[1] ?? 1) - 1, p[2] ?? 1).getDay(); // 0 = domingo
+};
+
+const dataEhValida = (iso: string) => {
+  if (!iso) return false;
+  const p = iso.split("-").map(Number);
+  const escolhida = new Date(p[0] ?? 0, (p[1] ?? 1) - 1, p[2] ?? 1);
+  const hoje = new Date();
+  const hojeMeiaNoite = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const limite = new Date(hoje.getFullYear() + 1, hoje.getMonth(), hoje.getDate());
+  return escolhida >= hojeMeiaNoite && escolhida < limite;
 };
 
 function gerarHorarios(iso: string): string[] {
