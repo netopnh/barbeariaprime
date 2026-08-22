@@ -764,7 +764,7 @@ function LandingPage() {
                     rel="noopener noreferrer"
                     className="transition-colors hover:text-gold"
                   >
-                    WhatsApp: (91) 98107-1939
+                    WhatsApp: (11) 99999-9999
                   </a>
                 </li>
                 <li className="flex gap-3">
@@ -836,7 +836,7 @@ function LandingPage() {
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-gold"
                 >
-                  (91) 98107-1939
+                  (11) 99999-9999
                 </a>
               </li>
               <li>
