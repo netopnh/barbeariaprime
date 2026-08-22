@@ -616,9 +616,16 @@ function LandingPage() {
                   type="date"
                   value={data}
                   min={hojeISO()}
+                  max={dataLimiteISO()}
                   onChange={(e) => {
-                    setData(e.target.value);
-                    setErros((x) => ({ ...x, data: "" }));
+                    const nova = e.target.value;
+                    if (nova && !dataEhValida(nova)) {
+                      setData("");
+                      setErros((x) => ({ ...x, data: "Escolha uma data válida a partir de hoje." }));
+                    } else {
+                      setData(nova);
+                      setErros((x) => ({ ...x, data: "" }));
+                    }
                   }}
                   aria-invalid={Boolean(erros["data"])}
                   className={`${campoBase} ${erros["data"] ? "border-destructive" : "border-border"}`}
