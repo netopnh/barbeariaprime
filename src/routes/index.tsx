@@ -264,7 +264,10 @@ function LandingPage() {
     if (!nome.trim()) novos["nome"] = "Informe seu nome completo.";
     if (!servico) novos["servico"] = "Escolha um serviço.";
     if (!data) novos["data"] = "Escolha uma data.";
-    else if (diaSemana(data) === 0) novos["data"] = "Aos domingos a barbearia está fechada.";
+    else if (!dataEhValida(data)) {
+      novos["data"] = "Escolha uma data válida a partir de hoje.";
+      setData("");
+    } else if (diaSemana(data) === 0) novos["data"] = "Aos domingos a barbearia está fechada.";
     if (!horario) novos["horario"] = "Selecione um horário.";
     setErros(novos);
     if (Object.keys(novos).length > 0) {
