@@ -6,7 +6,15 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// GitHub Pages serves this project from https://<user>.github.io/barbeariaprime/
+// Set GITHUB_PAGES=true in the CI build so assets resolve under that sub-path.
+// Locally (and on Lovable hosting) the base stays "/".
+const base = process.env["GITHUB_PAGES"] === "true" ? "/barbeariaprime/" : "/";
+
 export default defineConfig({
+  vite: {
+    base,
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
