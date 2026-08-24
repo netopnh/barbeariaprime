@@ -1,23 +1,22 @@
-// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-//   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,
-//     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
-//     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
-// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-// GitHub Pages serves this project from https://<user>.github.io/barbeariaprime/
-// Set GITHUB_PAGES=true in the CI build so assets resolve under that sub-path.
-// Locally (and on Lovable hosting) the base stays "/".
-const base = process.env["GITHUB_PAGES"] === "true" ? "/barbeariaprime/" : "/";
+const isGitHubPages = process.env["GITHUB_PAGES"] === "true";
+const base = isGitHubPages ? "/barbeariaprime/" : "/";
 
 export default defineConfig({
   vite: {
     base,
+    preview: { host: "127.0.0.1" },
   },
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
+    spa: isGitHubPages
+      ? {
+          enabled: true,
+          maskPath: "/barbeariaprime/",
+          prerender: { outputPath: "/index.html" },
+        }
+      : undefined,
   },
+  nitro: isGitHubPages ? false : undefined,
 });
