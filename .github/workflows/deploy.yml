@@ -31,7 +31,6 @@ jobs:
         env:
           GITHUB_PAGES: "true"
           NITRO_PRESET: static
-challenge: ""
         run: npm run build
 
       - name: Prepare dist folder
